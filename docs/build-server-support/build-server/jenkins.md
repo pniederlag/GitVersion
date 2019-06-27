@@ -1,4 +1,24 @@
-# Jenkins Setup
+# Jenkins Pipeline
+
+Example for using gitversion via docker in Jenkinsfile
+
+## Scripted Pipeline
+
+    checkout scm
+
+    // create gitversion.properties
+    // note that gitversion relys on existance of JENKINS_URL environment variable to enable output of the file
+    docker.image('gittools/gitversion:5.0.0-linux-debian-netcoreapp2.2').inside("--entrypoint=''") {
+      sh 'JENKINS_URL="http://dummy/" dotnet /app/GitVersion.dll /output buildserver'
+    }
+
+    // populate semverProperties for later consumption in any step
+    def semverProperties = readProperties file: 'gitversion.properties'
+    
+    // example to access variable
+    echo "Building semVer \"${semverProperties.GitVersion_SemVer}\""
+
+# Jenkins "classic"
 
 Injecting environment variables is not supported in Jenkins natively, but Jenkins plugins exist that provide this functionality. Of these plugins [EnvInject] appears to be the most popular with over 20k downloads per month.
 
